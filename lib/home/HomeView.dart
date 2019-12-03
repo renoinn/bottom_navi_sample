@@ -21,17 +21,6 @@ class _HomeViewState extends State<HomeView> {
   }
 
   @override
-  void didChangeDependencies() {
-    int param = PageStorage.of(context).readState(context);
-    if (param != null) {
-      count = param;
-    } else {
-      count = 0;
-    }
-    super.didChangeDependencies();
-  }
-
-  @override
   Widget build(BuildContext context) {
     print("build home");
     return Scaffold(
@@ -44,7 +33,6 @@ class _HomeViewState extends State<HomeView> {
               setState(() {
                 count++;
               });
-              PageStorage.of(context).writeState(context, count);
             },
             child: Text("count up"),
           ),
