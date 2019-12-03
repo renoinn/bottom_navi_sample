@@ -39,7 +39,7 @@ class _NavigationRootModel {
 
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   final homeModel = _NavigationRootModel(0, Icons.home, "ホーム", () => const HomeView());
   final notificationsModel = _NavigationRootModel(1, Icons.notifications, "通知", () => const NotificationsView());
@@ -49,6 +49,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Map<int, Widget> views = {};
   int currentIndex;
   List<_NavigationRootModel> models = [];
+  AnimationController controller;
+  bool expanded = false;
 
   @override
   void initState() {
@@ -61,24 +63,73 @@ class _MyHomePageState extends State<MyHomePage> {
       moreModel,
     ];
     views[currentIndex] = models[currentIndex].createView();
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> children = models.map((model) {
+      return Offstage(
+        offstage: currentIndex != model.index,
+        child: views[model.index],
+      );
+    }).toList();
+
+    Widget mainButtons = Align(
+      alignment: Alignment.bottomCenter,
+      child: ScaleTransition(
+        scale: CurvedAnimation(
+          parent: controller,
+          curve: Interval(
+              0.0,
+              1.0,
+              curve: Curves.easeOut
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 28.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              RaisedButton(
+                child: Text("見た"),
+              ),
+              SizedBox(width: 16.0,),
+              RaisedButton(
+                child: Text("遭った"),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
 
     return Scaffold(
       body: Stack(
-        children: models.map((model) {
-          return Offstage(
-            offstage: currentIndex != model.index,
-            child: views[model.index],
-          );
-        }).toList(),
+        children: <Widget>[
+          Stack(children: children,),
+          mainButtons,
+        ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          if (!expanded) {
+            controller.forward();
+            setState(() {
+              expanded = true;
+            });
+          } else {
+            controller.reverse();
+            setState(() {
+              expanded = false;
+            });
+          }
+        },
         child: Icon(Icons.add),
-      ),
+      ),//const _MainActionButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         color: Colors.purple,
@@ -170,8 +221,3 @@ class _NavigationButton extends StatelessWidget {
   }
 
 }
-
-
-
-
-
