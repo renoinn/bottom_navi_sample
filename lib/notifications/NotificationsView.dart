@@ -10,8 +10,15 @@ class NotificationsView extends StatelessWidget {
     print("build $routeName");
     return Scaffold(
       appBar: AppBar(),
-      body: Center(
-        child: Text(routeName),
+      body: Scrollbar(
+        child: ListView.builder(
+          itemCount: 20,
+          itemBuilder: (BuildContext context, int position) {
+            return ListTile(
+              title: Text("title $position"),
+            );
+          },
+        ),
       ),
     );
   }
