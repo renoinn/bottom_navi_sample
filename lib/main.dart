@@ -1,4 +1,7 @@
+import 'package:bottom_navi_sample/home/HomeNavigator.dart';
+import 'package:bottom_navi_sample/more/MoreNavigator.dart';
 import 'package:bottom_navi_sample/more/MoreView.dart';
+import 'package:bottom_navi_sample/notifications/NotificationsNavigator.dart';
 import 'package:bottom_navi_sample/notifications/NotificationsView.dart';
 import 'package:bottom_navi_sample/today/TodayNavigator.dart';
 import 'package:flutter/material.dart';
@@ -39,34 +42,38 @@ class _NavigationRootModel {
 
 }
 
-class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
-
-  final homeModel = _NavigationRootModel(0, Icons.home, "ホーム", () => const HomeView());
-  final notificationsModel = _NavigationRootModel(1, Icons.notifications, "通知", () => const NotificationsView());
-  final todayModel = _NavigationRootModel(2, Icons.today, "ニュース", () => const TodayNavigator());
-  final moreModel = _NavigationRootModel(3, Icons.more_horiz, "その他", () => const MoreView());
+class _MyHomePageState extends State<MyHomePage> {
+  final _homeKey = GlobalKey<NavigatorState>();
+  final _notificationsKey = GlobalKey<NavigatorState>();
+  final _todayKey = GlobalKey<NavigatorState>();
+  final _moreKey = GlobalKey<NavigatorState>();
 
   Map<int, Widget> views = {};
   int currentIndex;
   List<_NavigationRootModel> models = [];
-  AnimationController controller;
-  bool expanded = false;
+  List<GlobalKey> modelGlobalKeys = [];
 
   @override
   void initState() {
     super.initState();
-    currentIndex = 0;
+    final homeModel = _NavigationRootModel(0, Icons.home, "ホーム", () => HomeNavigator(navigatorKey: _homeKey,));
+    final notificationsModel = _NavigationRootModel(1, Icons.notifications, "通知", () => NotificationNavigator(navigatorKey: _notificationsKey,));
+    final todayModel = _NavigationRootModel(2, Icons.today, "ニュース", () => TodayNavigator(navigatorKey: _todayKey,));
+    final moreModel = _NavigationRootModel(3, Icons.more_horiz, "その他", () => MoreNavigator(navigatorKey: _moreKey,));
     models = [
       homeModel,
       notificationsModel,
       todayModel,
       moreModel,
     ];
+    modelGlobalKeys = [
+      _homeKey,
+      _notificationsKey,
+      _todayKey,
+      _moreKey,
+    ];
+    currentIndex = 0;
     views[currentIndex] = models[currentIndex].createView();
-    controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 250),
-    );
   }
 
   @override
@@ -78,100 +85,34 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       );
     }).toList();
 
-    Widget mainButtons = Align(
-      alignment: Alignment.bottomCenter,
-      child: ScaleTransition(
-        scale: CurvedAnimation(
-          parent: controller,
-          curve: Interval(
-              0.0,
-              1.0,
-              curve: Curves.easeOut
-          ),
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        body: Stack(
+          children: children,
         ),
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 28.0),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              RaisedButton(
-                child: Text("見た"),
-              ),
-              SizedBox(width: 16.0,),
-              RaisedButton(
-                child: Text("遭った"),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
 
-    return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          Stack(children: children,),
-          mainButtons,
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (!expanded) {
-            controller.forward();
-            setState(() {
-              expanded = true;
-            });
-          } else {
-            controller.reverse();
-            setState(() {
-              expanded = false;
-            });
-          }
-        },
-        child: Icon(Icons.add),
-      ),//const _MainActionButton(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        color: Colors.purple,
-        shape: CircularNotchedRectangle(),
-        child: Container(
-          height: 60,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  _NavigationButton(
-                    icon: homeModel.icon,
-                    title: homeModel.title,
-                    onPressed: () => onPressNavigationButton(homeModel),
-                    selected: currentIndex == homeModel.index,
-                  ),
-                  _NavigationButton(
-                    icon: notificationsModel.icon,
-                    title: notificationsModel.title,
-                    onPressed: () => onPressNavigationButton(notificationsModel),
-                    selected: currentIndex == notificationsModel.index,
-                  ),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  _NavigationButton(
-                    icon: todayModel.icon,
-                    title: todayModel.title,
-                    onPressed: () => onPressNavigationButton(todayModel),
-                    selected: currentIndex == todayModel.index,
-                  ),
-                  _NavigationButton(
-                    icon: moreModel.icon,
-                    title: moreModel.title,
-                    onPressed: () => onPressNavigationButton(moreModel),
-                    selected: currentIndex == moreModel.index,
-                  ),
-                ],
-              ),
-            ],
+          },
+          child: Icon(Icons.add),
+        ),
+        bottomNavigationBar: BottomAppBar(
+          color: Colors.purple,
+          shape: CircularNotchedRectangle(),
+          child: Container(
+            height: 60,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: models.map((model) {
+                return _NavigationButton(
+                  icon: model.icon,
+                  title: model.title,
+                  onPressed: () => onPressNavigationButton(model),
+                  selected: currentIndex == model.index,
+                );
+              }).toList(),
+            ),
           ),
         ),
       ),
@@ -181,11 +122,29 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   void onPressNavigationButton(_NavigationRootModel model) {
     setState(() {
       if (!views.containsKey(model.index)) {
-        print("putIfAbsent");
         views.putIfAbsent(model.index, () => model.createView());
+      }
+      if (currentIndex == model.index) {
+        final GlobalKey<NavigatorState> key = modelGlobalKeys[currentIndex];
+        key.currentState.popUntil((route) => route.isFirst);
       }
       currentIndex = model.index;
     });
+  }
+
+  Future<bool> _onWillPop() async {
+    final GlobalKey<NavigatorState> key = modelGlobalKeys[currentIndex];
+    final isFirstRouteInCurrentTab = !await key.currentState.maybePop();
+    if (isFirstRouteInCurrentTab) {
+      if (currentIndex != 0) {
+        setState(() {
+          currentIndex = 0;
+        });
+        return false;
+      }
+    }
+
+    return isFirstRouteInCurrentTab;
   }
 }
 

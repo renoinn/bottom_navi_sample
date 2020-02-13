@@ -4,11 +4,14 @@ import 'package:bottom_navi_sample/today/TodayView.dart';
 import 'package:flutter/material.dart';
 
 class TodayNavigator extends StatelessWidget {
-  const TodayNavigator({Key key}) : super(key: key);
+  final GlobalKey<NavigatorState> navigatorKey;
+
+  const TodayNavigator({Key key, this.navigatorKey}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Navigator(
+      key: navigatorKey,
       initialRoute: TodayView.routeName,
       onGenerateRoute: (RouteSettings settings) {
         return MaterialPageRoute(

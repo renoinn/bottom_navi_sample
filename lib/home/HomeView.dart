@@ -1,9 +1,10 @@
+import 'package:bottom_navi_sample/home/FullScreenView.dart';
 import 'package:flutter/material.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({Key key}) : super(key: key);
 
-  static const routeName = "/home";
+  static const routeName = "home/";
 
   @override
   State<StatefulWidget> createState() => _HomeViewState();
@@ -22,7 +23,6 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    print("build home");
     return Scaffold(
       appBar: AppBar(),
       body: Column(
@@ -35,6 +35,15 @@ class _HomeViewState extends State<HomeView> {
               });
             },
             child: Text("count up"),
+          ),
+          RaisedButton(
+            onPressed: () {
+              Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
+                builder: (_) => const FullScreenView(),
+                fullscreenDialog: true,
+              ));
+            },
+            child: Text("push second"),
           ),
         ],
       ),

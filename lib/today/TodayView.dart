@@ -9,7 +9,6 @@ class TodayView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("build $routeName");
     return Scaffold(
       appBar: AppBar(),
       body: Center(
