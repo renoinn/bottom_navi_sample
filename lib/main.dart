@@ -9,6 +9,12 @@ import 'package:bottom_navi_sample/home/HomeView.dart';
 
 void main() => runApp(MyApp());
 
+final HeroController heroController = HeroController(createRectTween: _createRectTween);
+
+RectTween _createRectTween(Rect begin, Rect end) {
+  return MaterialRectArcTween(begin: begin, end: end);
+}
+
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override

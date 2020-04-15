@@ -1,10 +1,12 @@
 import 'package:bottom_navi_sample/home/FullScreenView.dart';
 import 'package:flutter/material.dart';
 
+const FullScreenViewHeroTag = 'FullScreenViewHeroTag';
+
 class HomeView extends StatefulWidget {
   const HomeView({Key key}) : super(key: key);
 
-  static const routeName = "home/";
+  static const routeName = 'home/';
 
   @override
   State<StatefulWidget> createState() => _HomeViewState();
@@ -18,7 +20,7 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     super.initState();
     count = 0;
-    print("initState home");
+    print('initState home');
   }
 
   @override
@@ -34,16 +36,19 @@ class _HomeViewState extends State<HomeView> {
                 count++;
               });
             },
-            child: Text("count up"),
+            child: Text('count up'),
           ),
-          RaisedButton(
-            onPressed: () {
-              Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-                builder: (_) => const FullScreenView(),
-                fullscreenDialog: true,
-              ));
-            },
-            child: Text("push second"),
+          Hero(
+            tag: FullScreenViewHeroTag,
+            child: RaisedButton(
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
+                  builder: (_) => const FullScreenView(),
+                  fullscreenDialog: true,
+                ));
+              },
+              child: Text('push full screen'),
+            ),
           ),
         ],
       ),

@@ -2,6 +2,8 @@ import 'package:bottom_navi_sample/today/RankingView.dart';
 import 'package:bottom_navi_sample/today/RecentView.dart';
 import 'package:flutter/material.dart';
 
+const RankingViewHeroTag = 'RankingViewHeroTag';
+
 class TodayView extends StatelessWidget {
   const TodayView({Key key}) : super(key: key);
 
@@ -15,9 +17,12 @@ class TodayView extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Text(routeName),
-            RaisedButton(
-              onPressed: () => Navigator.pushNamed(context, RankingView.routeName),
-              child: Text("ranking view"),
+            Hero(
+              tag: RankingViewHeroTag,
+              child: RaisedButton(
+                onPressed: () => Navigator.pushNamed(context, RankingView.routeName),
+                child: Text("ranking view"),
+              ),
             ),
             RaisedButton(
               onPressed: () => Navigator.pushNamed(context, RecentView.routeName),

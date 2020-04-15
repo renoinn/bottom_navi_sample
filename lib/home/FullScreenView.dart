@@ -1,3 +1,4 @@
+import 'package:bottom_navi_sample/home/HomeView.dart';
 import 'package:flutter/material.dart';
 
 class FullScreenView extends StatelessWidget {
@@ -9,7 +10,20 @@ class FullScreenView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Center(child: Text("FullScreenView"),),
+      body: Column(
+        children: <Widget>[
+          Hero(
+            tag: FullScreenViewHeroTag,
+            child: RaisedButton(
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true).pop();
+              },
+              child: Text('pop full screen'),
+            ),
+          ),
+          Center(child: Text('FullScreenView'),),
+        ],
+      ),
     );
   }
 }
