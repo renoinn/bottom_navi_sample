@@ -19,9 +19,11 @@ class TodayView extends StatelessWidget {
             Text(routeName),
             Hero(
               tag: RankingViewHeroTag,
-              child: RaisedButton(
-                onPressed: () => Navigator.pushNamed(context, RankingView.routeName),
-                child: Text("ranking view"),
+              child: Center(
+                child: RaisedButton(
+                  onPressed: () => Navigator.pushNamed(context, RankingView.routeName),
+                  child: Text("ranking view"),
+                ),
               ),
             ),
             RaisedButton(
@@ -33,5 +35,4 @@ class TodayView extends StatelessWidget {
       ),
     );
   }
-
 }
